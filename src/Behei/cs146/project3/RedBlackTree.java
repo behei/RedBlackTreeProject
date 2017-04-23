@@ -159,21 +159,18 @@ public class RedBlackTree {
         return node;
     }
 **/
-    public <Key>void insertRedBlack(Key data)
-    {
-        current = insertRedBlack(current, data);
-    }
-    public <Key> Node insertRedBlack(Node<Key> node, Key data)
+
+    public <Key> void insertRedBlack(Key data)
     {
         current = parent = grand = header;
-        dummyNode.data = data;
+        dummyNode.data = (Comparable) data;
 
         while (current.data != data)
         {
             great = grand;
             grand = parent;
             parent = current;
-            current = data < current.data ? current.left : current.right;
+            current = (current.data.compareTo(data) > 0) ? current.left : current.right;
 
             if (current.left.color == RED && current.right.color == RED)
                 flipColorOrRotate(data);
@@ -181,9 +178,9 @@ public class RedBlackTree {
 
         if (current != dummyNode)
             return;
-        current = new Node(data, dummyNode, dummyNode);
+        current = new Node((Comparable) data, dummyNode, dummyNode);
 
-        if (data < parent.data)
+        if (parent.data.compareTo(data) > 0)
             parent.left = current;
         else
             parent.right = current;
@@ -191,7 +188,7 @@ public class RedBlackTree {
 
     }
 
-    private void flipColorOrRotate(int data)
+    private <Key>void flipColorOrRotate(Key data)
     {
         current.color = RED;
         current.left.color = BLACK;
@@ -201,7 +198,7 @@ public class RedBlackTree {
         {
             //forced to apply rotation
             grand.color = RED;
-            if (data < grand.data != data < parent.data)
+            if (grand.data.compareTo(data) > 0 != parent.data.compareTo(data) > 0)
                 parent = rotation(data, grand);
             current = rotation(data, great);
             current.color = BLACK;
@@ -210,12 +207,12 @@ public class RedBlackTree {
         header.right.color = BLACK;
     }
 
-    private Node rotation(int data, Node node)
+    private <Key> Node rotation(Key data, Node node)
     {
-        if (data < node.data)
-            return node.left = data < node.left.data ? rotateLeft(node.left) : rotateRight(node.right);
+        if (node.data.compareTo(data) > 0)
+            return node.left = node.left.data.compareTo(data) > 0 ? rotateLeft(node.left) : rotateRight(node.right);
         else
-            return node.right = data < node.right.data ? rotateLeft(node.right) : rotateRight(node.right);
+            return node.right = node.left.data.compareTo(data) < 0 ? rotateLeft(node.right) : rotateRight(node.right);
     }
 
     private Node rotateLeft(Node node)
@@ -233,13 +230,15 @@ public class RedBlackTree {
         temp.left = node;
         return temp;
     }
+
+    /*
     private int returnData(Node node) {
         while (node.right != null)
             node = node.right;
 
         return node.data;
     }
-
+    */
 
     /*
     public boolean checkIfSameParent() {
@@ -263,9 +262,9 @@ public class RedBlackTree {
         tree.printTree();
         //tree.treeMax();
         //tree.treeMin();
-        tree.search(2);
-        tree.search(11);
-        tree.search(8);
+        //tree.search(2);
+        //tree.search(11);
+        //tree.search(8);
 
        // tree.delete(2);
         //tree.delete(30);
