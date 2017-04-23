@@ -255,7 +255,7 @@ public class RedBlackTree {
     }
     */
     public static void main(String[] args) {
-        Integer[] integer = {1, 5, 2, 7, 4, 8, 100, 1};
+        Integer[] integer = {5, 2, 7, 4, 8, 100, 1};
         RedBlackTree tree = new RedBlackTree(Integer.MIN_VALUE);
         //tree.insertRedBlack(integer[0]);
         for (Integer n : integer) tree.insertRedBlack(n);
