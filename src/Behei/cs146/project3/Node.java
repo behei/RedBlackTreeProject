@@ -11,13 +11,13 @@ class Node <Key extends Comparable<? super Key>> implements Comparable<Node<Key>
     protected static final boolean BLACK = true;
 
     protected Node left, right;
-    protected Key data;
+    protected String data;
     protected boolean color;
 
-    public Node(Key data) {
+    public Node(String data) {
         this (data, null,null);
     }
-    public Node (Key data, Node left, Node right)
+    public Node (String data, Node left, Node right)
     {
         this.left = left;
         this.right = right;

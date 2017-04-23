@@ -2,6 +2,12 @@ package Behei.cs146.project3;
 
 import static Behei.cs146.project3.Node.RED;
 import static Behei.cs146.project3.Node.BLACK;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Scanner;
 
 /**
  * Created by mishabehey on 4/20/17.
@@ -18,14 +24,14 @@ public class RedBlackTree {
     private static Node dummyNode;
 
     static {
-        dummyNode = new Node(0);
+        dummyNode = new Node("0");
         dummyNode.left = dummyNode;
         dummyNode.right = dummyNode;
     }
 
 
-    private RedBlackTree(int NEGATIVE_INFINITY) {
-        header = new Node(NEGATIVE_INFINITY);
+    private RedBlackTree(String defaultString) {
+        header = new Node(defaultString);
         //currentNode.color = BLACK;
         header.left = dummyNode;
         header.right = dummyNode;
@@ -34,11 +40,11 @@ public class RedBlackTree {
 
 
 
-    private boolean search(int data) {
+    private boolean search(String data) {
         return search(header, data);
     }
 
-    private <Key>boolean search(Node node, Key data) {
+    private boolean search(Node node, String data) {
         boolean found = false;
         while ((node != dummyNode) && !found)
         {
@@ -109,7 +115,7 @@ public class RedBlackTree {
         printTree(header.right);
     }
 
-    private <Key>void printTree(Node node) {
+    private void printTree(Node node) {
         if (node != dummyNode) {
             char color = 'B';
             if (node.color == RED)
@@ -166,79 +172,75 @@ public class RedBlackTree {
     }
 **/
 
-    public <Key> void insertRedBlack(Key data)
+    public void insertRedBlack(String item )
     {
         current = parent = grand = header;
-        dummyNode.data = (Comparable) data;
-
-        while (true)
+        dummyNode.data = item;
+        while (!Objects.equals(current.data, item))
         {
-            if (!(current.data != data)) break;
             great = grand;
             grand = parent;
             parent = current;
-            current = (compareTo(current, data)) ? current.left : current.right;
-
+            current = (item.compareTo(current.data) < 0)? current.left : current.right;
+            // Check if two red children and fix if so
             if (current.left.color == RED && current.right.color == RED)
-                flipColorOrRotate(data);
+                flipColorOrRotate( item );
         }
-
+        // Insertion fails if already present
         if (current != dummyNode)
             return;
-        current = new Node((Comparable) data, dummyNode, dummyNode);
-
-        if (compareTo(parent, data))
+        current = new Node(item, dummyNode, dummyNode);
+        // Attach to parent
+        if (item.compareTo(parent.data) < 0)
             parent.left = current;
-        else {
+        else
             parent.right = current;
-        }
-        flipColorOrRotate(data);
-
+        flipColorOrRotate( item );
     }
 
-    private <Key>void flipColorOrRotate(Key data)
+    private void flipColorOrRotate(String item)
     {
+        // Do the color flip
         current.color = RED;
         current.left.color = BLACK;
         current.right.color = BLACK;
 
         if (parent.color == RED)
         {
-            //forced to apply rotation
+            // Have to rotate
             grand.color = RED;
-            if (compareTo(grand, data) != compareTo(parent, data)) {
-                parent = rotation(data, grand);
-            }
-            current = rotation(data, great);
+            if (item.compareTo(grand.data) < 0 !=  item.compareTo(parent.data ) < 0)
+                parent = rotation( item, grand );  // Start dbl rotate
+            current = rotation(item, great );
             current.color = BLACK;
         }
-
+        // Make root black
         header.right.color = BLACK;
     }
 
-    private <Key> Node rotation(Key data, Node node)
-    {
-        return compareTo(node, data) ? (node.left = compareTo(node.left, data) ? rotateLeft(node.left) : rotateRight(node.right)) : (node.right = compareTo(node.left, data) ? rotateLeft(node.right) : rotateRight(node.right));
-    }
 
-    private <Key> boolean compareTo(Node node, Key data) {
-        return node.data.compareTo(node.data) > 0;
-    }
-
-    private Node rotateLeft(Node node)
+    private Node rotation(String item, Node parent)
     {
-        Node temp = node.left;
-        node.left = temp.right;
-        temp.right = node;
-        return temp;
+        if(item.compareTo(parent.data) < 0)
+            return parent.left = item.compareTo(parent.left.data) < 0 ? rotateWithLeftChild(parent.left) : rotateWithRightChild(parent.left) ;
+        else
+            return parent.right = item.compareTo(parent.right.data) < 0 ? rotateWithLeftChild(parent.right) : rotateWithRightChild(parent.right);
     }
-
-    private Node rotateRight(Node node)
+    /* Rotate binary tree node with left child */
+    private Node rotateWithLeftChild(Node k2)
     {
-        Node temp = node.right;
-        node.right = temp.left;
-        temp.left = node;
-        return temp;
+        Node k1 = k2.left;
+        k2.left = k1.right;
+        k1.right = k2;
+        return k1;
+    }
+    /* Rotate binary tree node with right child */
+    private Node rotateWithRightChild(Node k1)
+    {
+        Node k2 = k1.right;
+        k1.right = k2.left;
+        k2.left = k1;
+        return k2;
     }
 
     /*
@@ -265,16 +267,40 @@ public class RedBlackTree {
     }
     */
     public static void main(String[] args) {
-        Integer[] integer = {5, 7, 9, 8, 12, 11};
+        //Integer[] integer = {5, 7, 9, 8, 12, 11};
         String[] strings = {"string", "secondString", "thirdString"};
-        RedBlackTree tree = new RedBlackTree(Integer.MIN_VALUE);
-        //RedBlackTree tree2 = new RedBlackTree(Integer.MIN_VALUE);
-        //tree.insertRedBlack(integer[0]);
-        for (Integer n : integer) tree.insertRedBlack(n);
+        RedBlackTree tree = new RedBlackTree("0");
         tree.printTree();
         System.out.println();
-        tree.insertRedBlack(10);
+        tree.insertRedBlack("a");
+        tree.insertRedBlack("aa");
+        tree.insertRedBlack("bbbb");
+        tree.insertRedBlack("aaaa");
         tree.printTree();
+        tree.search("aa");
+
+        //File file = new File("dictionary.txt");
+        /*RedBlackTree treeFile = new RedBlackTree("0");
+        try
+        {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNext())
+            {
+                String string = scanner.nextLine();
+                treeFile.insertRedBlack(string);
+                //System.out.println(string);
+            }
+
+            scanner.close();
+        }
+
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        treeFile.printTree();
+        treeFile.search("aaaa");
+        */
         //for (String string : strings) tree.insertRedBlack(string);
         //tree2.printTree();
         //tree.treeMax();
