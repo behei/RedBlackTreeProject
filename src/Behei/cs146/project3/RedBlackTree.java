@@ -29,17 +29,21 @@ public class RedBlackTree {
     }
 
     public boolean search(int data) {
-        return search(header, data);
+        return search(header.right, data);
     }
 
     public boolean search(Node node, int data) {
-        if (node.data == data || node == null) {
+        if (node.data == data || node == dummyNode) {
             System.out.println("found");
             return true;
         } else if (data < node.data)
             return search(node.left, data);
-        else
+        else if (data > node.data)
             return search(node.right, data);
+        else {
+            System.out.println("not found");
+            return false;
+        }
     }
     /*
     public void insert(int data) {
@@ -231,9 +235,10 @@ public class RedBlackTree {
         //tree.insertRedBlack(integer[0]);
         for (Integer n : integer) tree.insertRedBlack(n);
         tree.printTree();
-        tree.treeMax();
-        tree.treeMin();
-        tree.search(5);
+        //tree.treeMax();
+        //tree.treeMin();
+        tree.search(2);
+        tree.search(11);
        // tree.delete(2);
         //tree.delete(30);
         //tree.printTree();
