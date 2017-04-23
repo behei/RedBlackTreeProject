@@ -5,24 +5,28 @@ package Behei.cs146.project3;
  * Node needs a key of a node
  * it needs a value associate with a key
  */
-public class Node {
+class Node <Key extends Comparable<? super Key>> implements Comparable<Node<Key>> {
 
     protected static final boolean RED = false;
     protected static final boolean BLACK = true;
 
     protected Node left, right;
-    protected int data;
+    protected Key data;
     protected boolean color;
 
-    public Node(int data) {
+    public Node(Key data) {
         this (data, null,null);
     }
-    public Node (int data, Node left, Node right)
+    public Node (Key data, Node left, Node right)
     {
         this.left = left;
         this.right = right;
         this.data = data;
         this.color = BLACK;
+    }
+    @Override
+    public int compareTo(Node<Key> node){
+        return data.compareTo(node.data);
     }
     /*
     public boolean search (Node node, int data) {

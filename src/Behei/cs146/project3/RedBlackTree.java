@@ -29,10 +29,29 @@ public class RedBlackTree {
     }
 
     public boolean search(int data) {
-        return search(header.right, data);
+        return search(header, data);
     }
 
-    public boolean search(Node node, int data) {
+    private <Key>boolean search(Node node, Key data) {
+        boolean found = false;
+        while ((node != dummyNode) && !found)
+        {
+            if (node.data.compareTo(data) > 0)
+                node = node.left;
+            else if (node.data.compareTo(data) < 0)
+                node = node.right;
+            else
+            {
+                System.out.println("found");
+                found = true;
+                break;
+            }
+            found = search(node, data);
+        }
+
+
+        return found;
+        /*
         if (node.data == data || node == dummyNode) {
             System.out.println("found");
             return true;
@@ -44,6 +63,7 @@ public class RedBlackTree {
             System.out.println("not found");
             return false;
         }
+        */
     }
     /*
     public void insert(int data) {
@@ -83,7 +103,7 @@ public class RedBlackTree {
         printTree(header.right);
     }
 
-    public void printTree(Node node) {
+    public <Key>void printTree(Node node) {
         if (node != dummyNode) {
             char color = 'B';
             if (node.color == RED)
@@ -93,12 +113,12 @@ public class RedBlackTree {
             printTree(node.right);
         }
     }
-
+    /*
     public void treeMin() {
         treeMinimum(header);
     }
 
-    public int treeMinimum(Node node) {
+    public <Key> int treeMinimum(Node node) {
         while (node.left != null)
             node = node.left;
         System.out.println(node.data);
@@ -115,15 +135,15 @@ public class RedBlackTree {
 
         System.out.println(node.data);
     }
-
+*
     public void delete(int data) {
         current = delete(current, data);
     }
 
-    private Node delete(Node node, int data) {
+    private <Key >Node delete(Node node, Key data) {
         if (node == null) System.out.println("not in the tree");
 
-        else if (data < node.data)
+        else if ()
             node.left = delete(node.left, data);
         else if (data > node.data)
             node.right = delete(node.right, data);
@@ -138,8 +158,12 @@ public class RedBlackTree {
 
         return node;
     }
-
-    public void insertRedBlack(int data)
+**/
+    public <Key>void insertRedBlack(Key data)
+    {
+        current = insertRedBlack(current, data);
+    }
+    public <Key> Node insertRedBlack(Node<Key> node, Key data)
     {
         current = parent = grand = header;
         dummyNode.data = data;
@@ -215,6 +239,8 @@ public class RedBlackTree {
 
         return node.data;
     }
+
+
     /*
     public boolean checkIfSameParent() {
         return checkIfSameParent(root, root.left, root.right);
@@ -239,6 +265,8 @@ public class RedBlackTree {
         //tree.treeMin();
         tree.search(2);
         tree.search(11);
+        tree.search(8);
+
        // tree.delete(2);
         //tree.delete(30);
         //tree.printTree();
