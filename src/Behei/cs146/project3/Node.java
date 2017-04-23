@@ -26,7 +26,7 @@ class Node <Key extends Comparable<? super Key>> implements Comparable<Node<Key>
     }
     @Override
     public int compareTo(Node<Key> node){
-        return data.compareTo(node.data);
+        return this.data.compareTo(node.data);
     }
     /*
     public boolean search (Node node, int data) {
