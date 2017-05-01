@@ -111,7 +111,6 @@ public class RedBlackTree {
             else if (node.data.compareTo(data) < 0)
                 node = node.right;
             else {
-                System.out.println("found");
                 found = true;
                 break;
             }
@@ -419,12 +418,19 @@ public class RedBlackTree {
             System.out.println("The total time to insert is: " + totalTime + " ms");
 
             currentTime = System.currentTimeMillis();
-            dictionary.search("aaaa");
+            boolean searchResult = dictionary.search("aaaa");
             endingTime = System.currentTimeMillis();
             long totalTimeMs = (endingTime - currentTime);
-
-            System.out.println("The time to look up a string in Dictionary " + totalTimeMs + " ms");
-            System.out.println("That's some fast search right there! :)");
+            if (searchResult)
+            {
+                System.out.println("The time to look up a string in Dictionary " + totalTimeMs + " ms");
+                System.out.println("That's some fast search right there! :)");
+            }
+            else
+            {
+                System.out.println("Your word is not in our dictionary!");
+                System.out.println("Time for the unsuccessful search... " + totalTimeMs + " ms");
+            }
             //the line below can be uncommented to check the preOrderVisit
             //dictionary.preOrderVisit();
         } catch (FileNotFoundException e) {
