@@ -1,59 +1,116 @@
 package Behei.cs146.project3;
 
-import static Behei.cs146.project3.Node.RED;
-import static Behei.cs146.project3.Node.BLACK;
+/**
+ * Java Program that implements Red Black Tree
+ *
+ * @author Mykhailo Behei
+ * @version 0.0.1
+ * @since 04/30/2017
+ */
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Objects;
 import java.util.Scanner;
 
-/**
- * Created by mishabehey on 4/20/17.
- */
 public class RedBlackTree {
 
+    protected Node root; //a root Node
+    private static final int BLACK = 1; //black equal to 1
+    private static final int RED = 0; //red equal to zero
+    private String result = "";
+    private String resultColor = "";
 
-    //private boolean currentColor;
-    private Node current;
-    private Node parent;
-    private Node grand;
-    private Node great;
-    private Node header;
-    private static Node dummyNode;
+    class Node { //create a Node class inside of RedBlackTree class to save up space
+        protected String data; //data that will be save
+        private Node left, right; //left and right nodes
+        private Node parent; //a parent node
+        int color; //a node's color
 
-    static {
-        dummyNode = new Node("0");
-        dummyNode.left = dummyNode;
-        dummyNode.right = dummyNode;
+        Node(String data) {  //create a new node
+            this.data = data;
+            this.left = null;
+            this.right = null;
+            this.color = RED;
+        }
     }
 
-
-    private RedBlackTree(String defaultString) {
-        header = new Node(defaultString);
-        //currentNode.color = BLACK;
-        header.left = dummyNode;
-        header.right = dummyNode;
-        //root.color = BLACK;
+    /**
+     * method that returns a sibling of a node
+     *
+     * @param node as a node
+     * @return sibling
+     */
+    private Node getSibling(Node node) {
+        if (node.parent == null || node.parent.left == null || node.parent.right == null) return null;
+        else {
+            if (node == node.parent.left)
+                return node.parent.right;
+            else
+                return node.parent.left;
+        }
     }
 
+    /**
+     * returns aunt of a node, which is a sibling of a parent
+     *
+     * @param node that has an aunt
+     * @return an aunt
+     */
+    private Node getAunt(Node node) {
+        return getSibling(node.parent);
+    }
 
+    /**
+     * returns parent a node
+     *
+     * @param node that has a parent
+     * @return a parent
+     */
+    private Node getParent(Node node) {
+        if (node.parent != null) {
+            return node.parent;
+        } else return null;
+    }
 
+    /**
+     * returns a grandparent of a node
+     *
+     * @param node that has a grandparent
+     * @return a grandparent
+     */
+    private Node getGrandParent(Node node) {
+        if (node.parent != null) {
+            return node.parent.parent;
+        } else return null;
+    }
+
+    /**
+     * starts a search of a node
+     *
+     * @param data that needs to be found
+     * @return either found or not
+     */
     private boolean search(String data) {
-        return search(header, data);
+        if (search(root, data)) return true;
+        else return false;
     }
 
+    /**
+     * method that handles the logic of search
+     *
+     * @param node as node that is searched for
+     * @param data is used to compare values
+     * @return either found or not
+     */
     private boolean search(Node node, String data) {
-        boolean found = false;
-        while ((node != dummyNode) && !found)
-        {
+        boolean found;
+        found = false;
+        while (node != null && !found) {
             if (node.data.compareTo(data) > 0)
                 node = node.left;
             else if (node.data.compareTo(data) < 0)
                 node = node.right;
-            else
-            {
+            else {
                 System.out.println("found");
                 found = true;
                 break;
@@ -63,314 +120,321 @@ public class RedBlackTree {
 
 
         return found;
-        /*
-        if (node.data == data || node == dummyNode) {
-            System.out.println("found");
-            return true;
-        } else if (data < node.data)
-            return search(node.left, data);
-        else if (data > node.data)
-            return search(node.right, data);
-        else {
-            System.out.println("not found");
-            return false;
-        }
-        */
     }
-    /*
-    public void insert(int data) {
+
+    /**
+     * prints tree recursively
+     * preOrder printing
+     */
+    public void preOrderVisit() {
+         preOrderVisit(root);
+    }
+
+    /**
+     * prints tree recursively 
+     * @param node as parameter to walk through a tree
+     */
+    private void preOrderVisit(Node node) {
+        if (node == null) return;
+        //result += node.data;
+        //System.out.println(result);
+        System.out.println(node.data + " " + node.color);
+        preOrderVisit(node.left);
+        preOrderVisit(node.right);
+    }
+
+    /**
+     * I couldn't figure out how to use Visitor
+     * so I added this method to store values of RBT
+     * in a string
+     * @param node as root
+     * @return all the values in a RBT in preOrder
+     */
+    protected String specialPreOrderVisitForJUnit (Node node) {
+        if (node == null) return "";
+        result += node.data;
+        specialPreOrderVisitForJUnit(node.left);
+        specialPreOrderVisitForJUnit(node.right);
+        return result;
+    }
+
+    protected String specialPreOrderVisitColorForJUnit (Node node)
+    {
+        if (node == null) return "";
+        resultColor += node.color;
+        specialPreOrderVisitColorForJUnit(node.left);
+        specialPreOrderVisitColorForJUnit(node.right);
+        return resultColor;
+    }
+
+
+    /**
+     * insert node and data into a tree
+     *
+     * @param data needs to be inserted
+     */
+    public void insert(String data) {
         root = insert(root, data);
     }
 
-    //has to be updated to follow RBT pattern
-    private Node insert(Node node, int data) {
-        if (node == null) {
-            return new Node(data);
+    /**
+     * handles the logic of an insert
+     *
+     * @param node that will be created
+     * @param data that will be inserted
+     * @return inserted node
+     */
+    private Node insert(Node node, String data) {
+        Node temp = null;
+        Node insertNode = new Node(data);
+        while (node != null) {
+            temp = node;
+            if (data.compareTo(node.data) < 0)
+                node = node.left;
+            else
+                node = node.right;
         }
-        if (data < node.data) {
-            if (node.left != null) {
-                insert(node.left, data);
-                node.color = RED;
-            } else {
-                node.color = RED;
-                node.left = new Node(data);
+        insertNode.parent = temp;
+        if (temp == null) {
+            root = insertNode;
+            insertNode.color = BLACK;//black root
+            return root;
+        } else {
+            if (insertNode.data.compareTo(temp.data) < 0)
+                temp.left = insertNode;
+            else
+                temp.right = insertNode;
+        }
+        insertNode.left = null;
+        insertNode.right = null;
+        insertNode.color = RED;
+        fixTree(insertNode);
+        return root;
 
+    }
+
+    /**
+     * since we have an RBT tree, it needs to follow the definition
+     *
+     * @param node that needs a fix-up
+     * @return fixed tree
+     */
+    private Node fixTree(Node node) {
+
+        Node parentCurrent;
+        parentCurrent = getParent(node);
+        Node greatParent;
+        greatParent = getGrandParent(node);
+        Node aunt;
+        aunt = getAunt(node);
+
+        if (parentCurrent == null) {
+            return null;
+        } else {
+            if (parentCurrent.color == BLACK)
+                return node;
+            else if (parentCurrent.color == RED) {
+                if (aunt == null || aunt.color == BLACK)
+                    if (node != parentCurrent.right || parentCurrent != greatParent.left) {
+                        if (node == parentCurrent.left && parentCurrent == greatParent.right) {
+                            Node currentParent = node.parent;
+                            node.parent = currentParent.parent;
+
+                            currentParent.parent.right = node;
+
+                            Node currentRight = node.right;
+                            currentRight.parent = currentParent;
+                            currentParent.left = currentRight;
+
+                            node.right = currentParent;
+                            currentParent.parent = node;
+
+                            rotateLeft(node.right);
+                        } else {
+                            if (parentCurrent.left == node && greatParent.left == parentCurrent) {
+                                rotateRight(node);
+                            } else if (parentCurrent.right == node && greatParent.right == parentCurrent)
+                                rotateLeft(node);
+                        }
+                    } else {
+                        Node currentParent = node.parent;
+                        node.parent = currentParent.parent;
+                        currentParent.parent.left = node;
+
+                        Node currentLeft = node.left;
+                        currentLeft.parent = currentParent;
+                        currentParent.right = currentLeft;
+                        node.left = currentParent;
+                        currentParent.parent = node;
+
+
+                        rotateRight(node.left);
+                    }
+                else {
+                    if (aunt != null && aunt.color == RED) {
+                        parentCurrent.color = BLACK;
+                        aunt.color = BLACK;
+                        if (greatParent == root) {
+                            return root;
+                        }
+                        greatParent.color = RED;
+                        return fixTree(greatParent);
+                    }
+                }
+            }
+        }
+        return root;
+    }
+
+    /**
+     * handles the rotate left logic
+     *
+     * @param node rotated
+     */
+    private void rotateLeft(Node node) {
+        Node parentCurrent;
+        parentCurrent = getParent(node);
+        Node greatParent;
+        greatParent = getGrandParent(node);
+        if (parentCurrent != null) {
+            parentCurrent.color = BLACK;
+        }
+        if (greatParent != null) {
+            greatParent.color = RED;
+        }
+
+        if (greatParent != null) {
+            if (parentCurrent != null) {
+                greatParent.right = parentCurrent.left;
             }
         }
 
-        if (data > node.data) {
-            if (node.right != null) {
-                insert(node.right, data);
-                node.color = RED;
+        if (parentCurrent != null) {
+            if (parentCurrent.left == null) {
             } else {
-                node.color = RED;
-                node.right = new Node(data);
+                parentCurrent.left.parent = greatParent;
             }
         }
 
-        return node;
-    }
-    */
-    private void printTree() {
-        printTree(header.right);
-    }
+        if (parentCurrent != null) {
+            parentCurrent.left = parentCurrent.parent;
+        }
 
-    private void printTree(Node node) {
-        if (node != dummyNode) {
-            char color = 'B';
-            if (node.color == RED)
-                color = 'R';
-            System.out.println(node.data + " " + color);
-            printTree(node.left);
-            printTree(node.right);
+        if (parentCurrent != null) {
+            if (greatParent != null) {
+                parentCurrent.parent = greatParent.parent;
+            }
+        }
+
+        if (greatParent != null) {
+            if (greatParent.parent != null) {
+                if (parentCurrent.parent == greatParent.parent.left)
+                    greatParent.parent.left = parentCurrent;
+                else
+                    greatParent.parent.right = parentCurrent;
+            } else root = parentCurrent;
+        }
+
+        if (greatParent != null) {
+            greatParent.parent = parentCurrent;
         }
     }
-    /*
-    public void treeMin() {
-        treeMinimum(header);
-    }
 
-    public <Key> int treeMinimum(Node node) {
-        while (node.left != null)
-            node = node.left;
-        System.out.println(node.data);
-        return node.data;
-    }
+    /**
+     * handles the return right logic
+     *
+     * @param node that is rotated around
+     */
+    private void rotateRight(Node node) {
+        Node parentCurrent;
+        parentCurrent = getParent(node);
+        Node greatParent;
+        greatParent = getGrandParent(node);
+        if (parentCurrent != null) {
+            parentCurrent.color = BLACK; //black
+        }
+        if (greatParent != null) {
+            greatParent.color = RED; //red
+        }
 
-    public void treeMax() {
-        treeMax(header);
-    }
+        if (greatParent != null) {
+            if (parentCurrent != null) {
+                greatParent.left = parentCurrent.right;
+            }
+        }
+        if (parentCurrent != null && parentCurrent.right != null) {
+            parentCurrent.right.parent = greatParent;
+        }
 
-    private void treeMax(Node node) {
-        while (node.right != null)
-            node = node.right;
+        if (parentCurrent != null) {
+            parentCurrent.right = parentCurrent.parent;
+        }
 
-        System.out.println(node.data);
-    }
-*
-    public void delete(int data) {
-        current = delete(current, data);
-    }
+        if (parentCurrent != null) {
+            if (greatParent != null) {
+                parentCurrent.parent = greatParent.parent;
+            }
+        }
 
-    private <Key >Node delete(Node node, Key data) {
-        if (node == null) System.out.println("not in the tree");
-
-        else if ()
-            node.left = delete(node.left, data);
-        else if (data > node.data)
-            node.right = delete(node.right, data);
-        else {
-            if (node.left == null) return node.right;
-            else if (node.right == null) return node.left;
+        if (greatParent != null) {
+            if (greatParent.parent == null)
+                root = parentCurrent;
             else {
-                node.data = returnData(node.left);
-                node.left = delete(node.left, node.data);
+                if (parentCurrent != null) {
+                    if (parentCurrent.parent == greatParent.parent.left)
+                        greatParent.parent.left = parentCurrent;
+                    else
+                        greatParent.parent.right = parentCurrent;
+                }
             }
         }
 
-        return node;
-    }
-**/
-
-    public void insertRedBlack(String item )
-    {
-        current = parent = grand = header;
-        dummyNode.data = item;
-        while (!Objects.equals(current.data, item))
-        {
-            great = grand;
-            grand = parent;
-            parent = current;
-            current = (item.compareTo(current.data) < 0)? current.left : current.right;
-            // Check if two red children and fix if so
-            if (current.left.color == RED && current.right.color == RED)
-                flipColorOrRotate( item );
+        if (greatParent != null) {
+            greatParent.parent = parentCurrent;
         }
-        // Insertion fails if already present
-        if (current != dummyNode)
-            return;
-        current = new Node(item, dummyNode, dummyNode);
-        // Attach to parent
-        if (item.compareTo(parent.data) < 0)
-            parent.left = current;
-        else
-            parent.right = current;
-        flipColorOrRotate( item );
-    }
-
-    private void flipColorOrRotate(String item)
-    {
-        // Do the color flip
-        current.color = RED;
-        current.left.color = BLACK;
-        current.right.color = BLACK;
-
-        if (parent.color == RED)
-        {
-            // Have to rotate
-            grand.color = RED;
-            if (item.compareTo(grand.data) < 0 !=  item.compareTo(parent.data ) < 0)
-                parent = rotation( item, grand );  // Start dbl rotate
-            current = rotation(item, great );
-            current.color = BLACK;
-        }
-        // Make root black
-        header.right.color = BLACK;
-    }
-
-
-    private Node rotation(String item, Node parent)
-    {
-        if(item.compareTo(parent.data) < 0)
-            return parent.left = item.compareTo(parent.left.data) < 0 ? rotateWithLeftChild(parent.left) : rotateWithRightChild(parent.left) ;
-        else
-            return parent.right = item.compareTo(parent.right.data) < 0 ? rotateWithLeftChild(parent.right) : rotateWithRightChild(parent.right);
-    }
-    /* Rotate binary tree node with left child */
-    private Node rotateWithLeftChild(Node k2)
-    {
-        Node k1 = k2.left;
-        k2.left = k1.right;
-        k1.right = k2;
-        return k1;
-    }
-    /* Rotate binary tree node with right child */
-    private Node rotateWithRightChild(Node k1)
-    {
-        Node k2 = k1.right;
-        k1.right = k2.left;
-        k2.left = k1;
-        return k2;
-    }
-
-    /*
-    private int returnData(Node node) {
-        while (node.right != null)
-            node = node.right;
-
-        return node.data;
-    }
-    */
-
-    /*
-    public boolean checkIfSameParent() {
-        return checkIfSameParent(root, root.left, root.right);
-    }
-
-    private boolean checkIfSameParent(Node node, Node nodeLeft, Node nodeRight) {
-        return (node != null) &&
-                (((node.left == nodeLeft) && (node.right == nodeRight))
-                        || ((node.left == nodeRight) && (node.right == nodeLeft))
-                        || checkIfSameParent(node.left, nodeLeft, nodeRight)
-                        || checkIfSameParent(node.right, nodeLeft, nodeLeft));
 
     }
-    */
+
+    /**
+     * Dictionary is being read into the RBT
+     * Time is tested in here
+     * Search is tested in here
+     *
+     * @param args as args
+     */
     public static void main(String[] args) {
-        //Integer[] integer = {5, 7, 9, 8, 12, 11};
-        String[] strings = {"string", "secondString", "thirdString"};
-        RedBlackTree tree = new RedBlackTree("0");
-        tree.printTree();
-        System.out.println();
-        tree.insertRedBlack("a");
-        tree.insertRedBlack("aa");
-        tree.insertRedBlack("bbbb");
-        tree.insertRedBlack("aaaa");
-        tree.printTree();
-        tree.search("aa");
 
-        //File file = new File("dictionary.txt");
-        /*RedBlackTree treeFile = new RedBlackTree("0");
-        try
-        {
+        File file = new File("dictionary.txt");
+        RedBlackTree dictionary = new RedBlackTree();
+        try {
             Scanner scanner = new Scanner(file);
-            while (scanner.hasNext())
-            {
+            long currentTime = System.currentTimeMillis();
+            while (scanner.hasNext()) {
                 String string = scanner.nextLine();
-                treeFile.insertRedBlack(string);
-                //System.out.println(string);
+                dictionary.insert(string);
             }
-
+            long endingTime = System.currentTimeMillis();
             scanner.close();
-        }
+            int totalTime = (int) (endingTime - currentTime);
+            System.out.println("The total time to insert is: " + totalTime + " ms");
 
-        catch (FileNotFoundException e)
-        {
+            currentTime = System.currentTimeMillis();
+            dictionary.search("aaaa");
+            endingTime = System.currentTimeMillis();
+            long totalTimeMs = (endingTime - currentTime);
+
+            System.out.println("The time to look up a string in Dictionary " + totalTimeMs + " ms");
+            System.out.println("That's some fast search right there! :)");
+            //the line below can be uncommented to check the preOrderVisit
+            //dictionary.preOrderVisit();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        treeFile.printTree();
-        treeFile.search("aaaa");
-        */
-        //for (String string : strings) tree.insertRedBlack(string);
-        //tree2.printTree();
-        //tree.treeMax();
-        //tree.treeMin();
-        //tree.search(2);
-        //tree.search(11);
-        //tree.search(8);
-
-       // tree.delete(2);
-        //tree.delete(30);
-        //tree.printTree();
-
 
 
     }
-    /*
-    public int treeSuccessor (Node node) {
-        if (node.right != null)
-            return
+
+    public interface Visitor {
+        void visit(Node n);
     }
-    */
-
-
-
-    /*
-    public RedBlackTree() {
-        //this();
-    }
-
-
-    public boolean checkIfEmpty() {
-        if (root == null)
-            return true;
-        else
-            return false;
-    }
-
-    public int getSize(Node node) {
-        if (node == null)
-            return 0;
-
-        else
-            return node.getSize();
-
-    }
-
-    public void insert(int value) {
-        root = insert(root, value);
-    }
-
-    public Node<Key, Value> insert(Node<Key, Value> node, <Key, Value> value) {
-        if (node == null)
-        {
-            node = new Node(node, value, "black", 0);
-
-        }
-    }
-
-    public Node search(int value) {
-        return search(root, value);
-    }
-
-    private Node search(Node node, int value) {
-        if (node == null || value == (int) node.value) {
-            return node;
-        }
-        if (value < (int) node.value)
-            return search(node.left, value);
-        else
-            return search(node.right, value);
-    }
-    */
 }
